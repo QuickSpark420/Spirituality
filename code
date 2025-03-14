@@ -1,0 +1,73 @@
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
+const companions = [
+  { id: "luna", name: "Luna (Black Cat)", personality: "Mysterious, playful, intuitive.", blurb: "I'm Luna, your guide to the unseen! With a twitch of my tail, I'll help you decode the messages the universe sends." },
+  { id: "sol", name: "Sol (Owl)", personality: "Wise, calm, thoughtful.", blurb: "I am Sol, the keeper of knowledge. Ask, and I shall guide you with wisdom from the stars." },
+  { id: "ember", name: "Ember (Fox)", personality: "Clever, adaptable, a bit mischievous.", blurb: "I’m Ember, always two steps ahead! Let me help you navigate life's twists and turns with a little magic." },
+  { id: "willow", name: "Willow (Rabbit)", personality: "Gentle, optimistic, nurturing.", blurb: "Soft and sweet but full of surprises! I help manifest your dreams with a touch of luck and love." },
+  { id: "nyx", name: "Nyx (Butterfly)", personality: "Free-spirited, artistic, insightful.", blurb: "I flutter between worlds, bringing you messages of change and growth. Let’s embrace transformation together!" },
+  { id: "astra", name: "Astra (Crystal Guardian)", personality: "Cosmic, grounding, deeply connected to energy.", blurb: "I resonate with your energy, shifting colors to match your aura. I bring clarity, balance, and deep intuition." },
+];
+
+export default function CompanionSelection() {
+  const router = useRouter();
+  const [selectedCompanion, setSelectedCompanion] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedCompanion = localStorage.getItem("selectedCompanion");
+        if (savedCompanion) {
+          const parsedCompanion = JSON.parse(savedCompanion);
+          if (parsedCompanion && parsedCompanion.id) {
+            setSelectedCompanion(parsedCompanion.id);
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing selected companion from local storage:", error);
+      }
+    }
+  }, []);
+
+  const chooseCompanion = (companion) => {
+    try {
+      setSelectedCompanion(companion);
+      localStorage.setItem("selectedCompanion", JSON.stringify(companion));
+      router.push("/tutorial");
+    } catch (error) {
+      console.error("Error saving selectedCompanion to localStorage:", error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-b from-indigo-500 via-purple-700 to-indigo-900 text-white relative">
+      <h1 className="text-5xl font-extrabold mb-6">🐾 Choose Your Spiritual Companion</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {companions.map((companion) => (
+          <div key={companion.id} className={`p-6 bg-white text-black rounded-3xl shadow-xl cursor-pointer transition-all hover:scale-105`}> 
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-2xl font-bold mb-2">{companion.name}</h2>
+              <p className="italic text-gray-700 mb-4">{companion.personality}</p>
+              <p className="text-sm mb-4">{companion.blurb}</p>
+              <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-800" onClick={() => chooseCompanion(companion)}>
+                Choose Me!
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-12 p-6 bg-white text-black rounded-3xl shadow-xl w-full max-w-4xl">
+        <h2 className="text-3xl font-bold mb-4">✨ Learn About Astrology ✨</h2>
+        <p className="mb-4">Astrology is a powerful tool for self-discovery and understanding the universe. Explore the foundations of astrology below:</p>
+        <ul className="list-disc list-inside">
+          <li className="mb-2"><strong>Zodiac Signs:</strong> Learn about the 12 zodiac signs and their traits.</li>
+          <li className="mb-2"><strong>Planets:</strong> Discover the meaning of each planet in astrology.</li>
+          <li className="mb-2"><strong>Houses:</strong> Understand how different areas of life are influenced by the 12 houses.</li>
+          <li className="mb-2"><strong>Aspects:</strong> Dive into the connections between planets and how they shape your personality.</li>
+        </ul>
+        <button className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-800" onClick={() => router.push("/astrology")}>Explore Astrology</button>
+      </div>
+    </div>
+  );
+}
